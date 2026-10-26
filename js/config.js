@@ -11,8 +11,8 @@
      adminEmail = correo del usuario administrador creado en Supabase (Authentication → Users).
                   La contraseña se valida en Supabase; aquí NO se guarda ninguna contraseña. */
 window.BJ_CONFIG={
-  supabaseUrl:"",
-  supabaseAnonKey:"",
+  supabaseUrl:"https://soeurzbfwioldvkkfkpd.supabase.co",
+  supabaseAnonKey:"sb_publishable_xFMGM4xQSSpYspeYl2jbpg_MOgXYPdJ",
   adminTel:"3325941532",
-  adminEmail:""
+  adminEmail:"viveros.flores@gmail.com"
 };
