@@ -68,6 +68,46 @@
         row.media_tipo=media.t;row.media_path=path}
       return mapRifa(ok(await sb.from("rifas").insert(row).select().single()))
     },
+    async exportar(){
+      var cfg=ok(await sb.from("configuracion").select("*").eq("id",1).single());
+      var rifas=ok(await sb.from("rifas").select("*").order("creada"));
+      var hist=ok(await sb.from("config_historial").select("*").order("creada"));
+      return{configuracion:cfg,rifas:rifas,historial:hist,reservas:await window.DB.adminReservas()}
+    },
+    async liberarRevision(){
+      var d=ok(await sb.from("reservas").update({estado:"liberada"}).eq("estado","revision").select("id"));
+      return d.length
+    },
+    async restaurarListo(){
+      var r=await sb.rpc("admin_restaurar_reservas",{p_reservas:[]});
+      if(r.error){var m=String(r.error.message||"");if(/Could not find the function|PGRST202|does not exist/i.test(m+" "+(r.error.code||"")))return false;ok(r)}
+      return true
+    },
+    async restaurarRifas(lista){
+      var ex={};ok(await sb.from("rifas").select("id")).forEach(function(r){ex[r.id]=1});
+      var rows=[];
+      (lista||[]).forEach(function(r){
+        if(!r||!/^[0-9a-f-]{36}$/i.test(r.id||"")||ex[r.id]||!r.nombre||!(Number(r.precio)>0))return;
+        rows.push({id:r.id,nombre:String(r.nombre).slice(0,120),premio:r.premio||null,descr:r.descr||null,fecha:r.fecha||null,precio:Number(r.precio),
+          media_tipo:(r.media_tipo||r.m)||null,media_path:r.media_path||null,activa:r.activa!==false,creada:r.creada||undefined})
+      });
+      if(rows.length)ok(await sb.from("rifas").insert(rows));
+      return rows.length
+    },
+    async restaurarReservas(lista){
+      var tot={insertadas:0,existentes:0,conflictos:[],sin_rifa:[],errores:[]};
+      for(var i=0;i<lista.length;i+=40){
+        var d=ok(await sb.rpc("admin_restaurar_reservas",{p_reservas:lista.slice(i,i+40)}));
+        tot.insertadas+=d.insertadas;tot.existentes+=d.existentes;
+        tot.conflictos=tot.conflictos.concat(d.conflictos);tot.sin_rifa=tot.sin_rifa.concat(d.sin_rifa);tot.errores=tot.errores.concat(d.errores)
+      }
+      return tot
+    },
+    async restaurarComprobante(cpath,blob){
+      var r=await sb.storage.from("comprobantes").upload(cpath,blob,{contentType:blob.type||"image/jpeg",upsert:false});
+      if(r.error){if(/already exists|Duplicate/i.test(String(r.error.message||"")))return"existe";ok(r)}
+      return"ok"
+    },
     async archivarRifa(id){ok(await sb.from("rifas").update({activa:false}).eq("id",id))}
   }
 })();
