@@ -12,7 +12,7 @@
                   La contraseña se valida en Supabase; aquí NO se guarda ninguna contraseña. */
 window.BJ_CONFIG={
   supabaseUrl:"https://zasdvntotobaoxkdofai.supabase.co",
-  supabaseAnonKey:"sb_publishable_6vE0OmtVh9mPVlkHv2tMKQ_wPZqYzcM",
+  supabaseAnonKey:"sb_publishable_xFMGM4xQSSpYspeYl2jbpg_MOgXYPdJ",
   adminTel:"3325941532",
   adminEmail:"viveros.flores@gmail.com"
 };
