@@ -176,7 +176,7 @@ $("btnOk").onclick=async function(){
   try{
     var r=await DB.crearReserva(cel,PV.rid,PV.nums);
     var d=E("div",null,"ok");d.appendChild(E("b","¡Reserva creada!"));d.appendChild(document.createElement("br"));
-    d.appendChild(document.createTextNode("Código "+r.code+" · "+q+" boletos · Total "+mx(r.t)+". Tienes 24 horas para subir tu comprobante de pago. Tu boleto con la rifa, fecha y hora y tus números aparece en “Mis reservas”; cuando se valide el pago podrás descargarlo en PDF."+(CFG.txt.pago?" Pago: "+CFG.txt.pago:"")));
+    d.appendChild(document.createTextNode("Código "+r.code+" · "+q+" boletos · Total "+mx(r.t)+". Tienes 24 horas para subir tu comprobante de pago. Tu boleto con la rifa, fecha y hora y tus números aparece en “Mis reservas”; cuando se valide el pago podrás descargarlo en PDF."+" Los datos para pagar aparecen en grande dentro de tu reserva, con botones para copiarlos."));
     clrPrev();$("res").textContent="";$("res").appendChild(d);await cargaRes();rRes()
   }catch(e){
     if(e.code==="numeros_ocupados"){await genPrev();$("res").textContent="Algunos de esos números ya no estaban libres. Te mostramos otros: revísalos y acepta de nuevo."}
@@ -207,11 +207,11 @@ function rPub(){
   var rows=[["Premio principal",t.premio],["Sobre la rifa",t.descr],["Fecha del sorteo",t.fecha?fF(t.fecha)+(t.hora?" a las "+t.hora:""):""],["Lugar",t.lugar],["Método de sorteo",t.metodo]].filter(function(r){return r[1]});
   var b=$("info");b.textContent="";$("infoS").classList.toggle("hide",!rows.length);
   rows.forEach(function(r){var c=E("div",null,"card");c.appendChild(E("h3",r[0]));c.appendChild(E("p",r[1]));b.appendChild(c)});
-  $("pagoBox").textContent=t.pago?"Instrucciones de pago: "+t.pago:"";
+  var pb=$("pagoBox");pb.textContent="";var ib0=bloqueInstr(null);if(ib0)pb.appendChild(ib0);var wb0=waBloque(null);if(wb0)pb.appendChild(wb0);
   $("reglasS").classList.toggle("hide",!t.reglas);$("reglasT").textContent=t.reglas||"";
   $("fTxt").textContent=t.footer||(n+" · Sorteos reales entre amigos");
   var c=$("fCt");c.textContent="";var w=(t.wa||"").replace(/\D/g,"");
-  if(w.length===10){var a=E("a","Contacto por WhatsApp");a.href="https://wa.me/52"+w;a.target="_blank";a.rel="noopener";a.style.color="var(--acc)";c.appendChild(a)}
+  if(w.length===10){var a=waBloque(null);a.textContent="💬 Contacto por WhatsApp";a.style.maxWidth="420px";a.style.margin="12px auto 0";c.appendChild(a)}
 }
 function rTxt(){
   var b=$("aTxt");b.textContent="";
@@ -1005,9 +1005,44 @@ function copia(txt,b){
   try{navigator.clipboard.writeText(txt).then(listo,alt)}catch(e){alt()}
 }
 function enlaceOk(u){return typeof u==="string"&&/^https:\/\/[^\s]+$/i.test(u)&&u.length<=300}
+function numDe(t){
+  var m=String(t||"").match(/\d[\d \-]{8,26}\d/);if(!m)return"";
+  var d=m[0].replace(/\D/g,"");return(d.length>=10&&d.length<=22)?d:""
+}
+function waBloque(r){
+  var w=String((CFG.txt&&CFG.txt.wa)||"").replace(/\D/g,"");if(w.length!==10)return null;
+  var msg=r?"Hola, ya hice el pago de mi reserva "+r.code+" por "+mx(r.t)+". Te envío mi comprobante.":"Hola, quiero información de la rifa.";
+  var a=E("a",r?"💬 Enviar comprobante por WhatsApp":"💬 Escríbenos por WhatsApp","wabig");
+  a.href="https://wa.me/52"+w+"?text="+encodeURIComponent(msg);a.target="_blank";a.rel="noopener";return a
+}
+function bloqueInstr(r){
+  var t=(CFG.txt&&CFG.txt.pago)||"";if(!t)return null;
+  var c=E("div",null,"pgx"),n=numDe(t),m=String(t).match(/\d[\d \-]{8,26}\d/);
+  c.appendChild(E("div","Datos para depositar o transferir","pgxt"));
+  var resto=t;
+  if(n){
+    resto=t.replace(m[0]," ").replace(/[ \t]+\n/g,"\n").replace(/\n{2,}/g,"\n").trim();
+    c.appendChild(E("div","Cuenta, tarjeta o CLABE","pgxl"));
+    c.appendChild(E("div",n.replace(/(\d{4})(?=\d)/g,"$1 "),"pgxn"))
+  }
+  if(resto)c.appendChild(E("div",resto,"pgxb"));
+  var f=E("div",null,"row");
+  if(n){var b1=E("button","📋 Copiar número","");b1.onclick=function(){copia(n,b1)};f.appendChild(b1)}
+  var b2=E("button","Copiar todo","alt");b2.onclick=function(){copia(t,b2)};f.appendChild(b2);
+  c.appendChild(f);
+  if(r){
+    var g=E("div",null,"pgxm");
+    function dato(l,v,cp){var d=E("div",null,"pgxr");d.appendChild(E("span",l,"pgxl"));d.appendChild(E("b",v));var b=E("button","Copiar","alt mini");b.onclick=function(){copia(cp,b)};d.appendChild(b);g.appendChild(d)}
+    dato("Monto exacto: ",mx(r.t),r.t.toFixed(2));
+    dato("Concepto o referencia: ",r.code,r.code);
+    c.appendChild(g)
+  }
+  return c
+}
 function pagoUI(r,ejemplo){
   var P=pagosDe(),hay=false,box=E("div",null,"pg");
   box.appendChild(E("div","Cómo pagar","tkl"));
+  var ib=bloqueInstr(r);if(ib){hay=true;box.appendChild(ib)}
   PROV.forEach(function(m){
     var d=P[m[0]];if(!d||!d.on)return;
     var auto=m[0]==="mp"&&d.auto&&DB.modo==="supabase";
@@ -1030,6 +1065,7 @@ function pagoUI(r,ejemplo){
     if(enlaceOk(d.link)){var a=E("a","Abrir enlace de pago de "+m[1]);a.href=d.link;a.target="_blank";a.rel="noopener";a.style.cssText="display:inline-block;margin:6px 0;color:var(--acc)";c.appendChild(a)}
     box.appendChild(c)
   });
+  var wb=waBloque(r);if(wb){hay=true;box.appendChild(wb)}
   if(hay)box.appendChild(E("div","Después de pagar"+(DB.modo==="supabase"&&(P.mp||{}).auto?" por transferencia o enlace":"")+", sube tu comprobante arriba para que se revise.","note"));
   return hay?box:null
 }
