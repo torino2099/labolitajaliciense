@@ -1,0 +1,29 @@
+{
+  "background_color": "#ffffff",
+  "description": "La Bolita Jalisciense: sorteos reales entre amigos. Reserva tus boletos con tu número de celular.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "torino2099.github",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "torino2099.github",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "https://torino2099.github.io/labolitajaliciense/assets/logo.jpg",
+      "type": "image/jpeg",
+      "sizes": "160x160",
+      "isSquare": true,
+      "isPng": false,
+      "isWebp": false,
+      "isJpg": true,
+      "width": 160,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
+    }
+  ],
+  "id": "labolitajaliciense",
+  "lang": "es"
+}
