@@ -28,10 +28,10 @@ a{color:var(--gold)}
 
 /* Encabezado */
 header{position:sticky;top:0;z-index:40;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid var(--bd)}
-header .w{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:10px 20px}
+header .w{display:flex;justify-content:space-between;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:10px 20px}
 .logo{font-weight:700;color:var(--gold);font-size:18px;font-family:var(--fh)}
 .logo-img{height:44px;width:44px;object-fit:cover;border-radius:50%;box-shadow:0 0 0 2px var(--bd),0 4px 14px rgba(124,58,237,.3)}
-.nav{display:flex;align-items:center;gap:6px;margin-left:auto}
+.nav{display:flex;align-items:center;gap:6px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
 .nav a{color:var(--mut);text-decoration:none;font:500 14px var(--fb);padding:8px 12px;border-radius:8px;transition:color var(--t),background var(--t)}
 .nav a:hover{color:var(--tx);background:var(--bg2)}
 .nav .btn-buy{color:#fff;background:linear-gradient(135deg,var(--btn1),var(--btn2));font-weight:600;box-shadow:0 4px 14px var(--ring)}
@@ -157,6 +157,16 @@ tbody tr{transition:background var(--t)}tbody tr:hover,tr:hover>td{background:co
 .wa-btn{margin-top:12px;padding:12px 20px}.wa-btn:hover,.wabig:hover{transform:translateY(-2px);filter:brightness(1.05)}
 .wabig{display:flex;width:100%;min-height:64px;margin:16px 0;padding:14px 18px;font-size:clamp(18px,5vw,22px);font-weight:800;line-height:1.2;text-align:center;border-radius:16px}
 footer{border-top:1px solid var(--bd);padding:30px 0;color:var(--mut);font-size:14px;text-align:center;margin-top:20px}
+
+/* Botón y ventana de instalación (acceso directo) */
+.nav .btn-install{margin:0;padding:8px 14px;font-size:14px;color:var(--tx);background:var(--card);border:1px solid var(--bd);box-shadow:none}
+.nav .btn-install:hover{border-color:var(--gold);box-shadow:none}
+.inst-dlg{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:rgba(8,7,26,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:fadeIn .25s ease}
+.inst-card{width:100%;max-width:420px;background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.45);animation:pop .3s cubic-bezier(.2,.7,.2,1)}
+.inst-card h3{margin:0 0 8px;font-size:20px}.inst-card p{margin:0 0 12px;color:var(--mut);font-size:15px}
+.inst-card ol{margin:0 0 6px;padding-left:22px;font-size:15px}.inst-card li{margin:8px 0}
+.inst-card button{width:100%;margin-top:14px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* Aparición al hacer scroll (solo si el script la activa) */
 .js section.rv,.js .hero-media.rv,.js .hero-copy.rv{opacity:0;transform:translateY(14px);transition:opacity .4s ease,transform .4s cubic-bezier(.2,.7,.2,1)}

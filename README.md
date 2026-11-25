@@ -41,11 +41,13 @@ En **Project Settings → API** copia el *Project URL* y la clave **anon / publi
 ```js
 window.BJ_CONFIG={
   supabaseUrl:"https://XXXX.supabase.co",
-  supabaseAnonKey:"eyJ...",
-  adminTel:"3325941532",          // celular que pide la contraseña de administrador
-  adminEmail:"TU_CORREO@ejemplo.com" // el correo del usuario creado en el paso 2
+  supabaseAnonKey:"eyJ..."
 };
 ```
+
+Este archivo es público (vive en el repositorio de GitHub), así que a propósito
+ya no guarda tu correo ni tu teléfono de administrador — ver la sección
+"Primer ingreso" de abajo.
 
 Guarda el archivo y haz `commit`: en unos minutos la página se vuelve a publicar y el aviso de "Modo demostración" desaparece.
 
@@ -57,11 +59,11 @@ La clave anon es pública por diseño (la protegen las reglas de seguridad del S
 3. Si el proyecto vive dentro de una subcarpeta del repositorio (por ejemplo `la-bolita-jalisciense/`), mueve `.github/` a la raíz del repositorio y en `pages.yml` cambia `path: .` por `path: la-bolita-jalisciense`.
 
 ### 5) Primer ingreso
-Abre el sitio y escribe tu celular de administrador (`adminTel`): aparece el campo **Contraseña de administrador**. Entra con la contraseña del usuario que creaste en el paso 2 y configura precio, textos, imágenes y rifas. Prueba una reserva completa con otro celular. (También puedes entrar con correo y contraseña desde **Acceso administrador**.)
+Abre el sitio, despliega **Acceso administrador** (debajo del botón "Entrar") y escribe ahí el correo y la contraseña del usuario que creaste en el paso 2. Configura precio, textos, imágenes y rifas, y prueba una reserva completa con otro celular.
 
 ## Si no puedes entrar como administrador
 
-Ejecuta `supabase/admin.sql` paso por paso. Las causas más comunes: el usuario se creó con SQL en lugar de **Authentication → Users → Add user** (queda sin identidad y no puede iniciar sesión), el correo de `adminEmail` en `js/config.js` no coincide con el del usuario, o falta el INSERT en `admins` (hay que repetirlo cada vez que se borra y se vuelve a crear el usuario, porque el id cambia). La página muestra bajo el campo de contraseña el motivo exacto.
+Ejecuta `supabase/admin.sql` paso por paso. Las causas más comunes: el usuario se creó con SQL en lugar de **Authentication → Users → Add user** (queda sin identidad y no puede iniciar sesión), el correo que escribiste en "Acceso administrador" no coincide con el del usuario, o falta el INSERT en `admins` (hay que repetirlo cada vez que se borra y se vuelve a crear el usuario, porque el id cambia). La página muestra bajo el campo de contraseña el motivo exacto.
 
 ## Cambiar la contraseña de administrador
 
@@ -164,4 +166,4 @@ Los datos se refrescan solos cada 20 segundos mientras la página está abierta.
 
 ## Licencia
 
-Sin licencia definida. Agrega un archivo `LICENSE` según cómo quieras compartir el código.
+Código propietario — todos los derechos reservados (ver [`LICENSE`](LICENSE)). Verlo en GitHub no autoriza a copiarlo, modificarlo ni reutilizarlo sin permiso escrito del autor.

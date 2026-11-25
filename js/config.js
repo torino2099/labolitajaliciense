@@ -7,12 +7,13 @@
    Si supabaseUrl y supabaseAnonKey están vacíos, la página funciona en modo demostración (datos solo en el navegador).
 
    ADMINISTRADOR:
-     adminTel   = celular que, al escribirlo, pide la contraseña de administrador.
-     adminEmail = correo del usuario administrador creado en Supabase (Authentication → Users).
-                  La contraseña se valida en Supabase; aquí NO se guarda ninguna contraseña. */
+     Este archivo es público (vive en un repositorio visible en GitHub), así que
+     a propósito NO guarda tu correo ni tu teléfono personales. Para entrar como
+     administrador, abre la página, en "Compra tus boletos" pulsa "Acceso
+     administrador" y escribe ahí tu correo y contraseña (los mismos que creaste
+     en Supabase → Authentication → Users). Esa cuenta se valida en Supabase;
+     aquí no se guarda ninguna contraseña. */
 window.BJ_CONFIG={
   supabaseUrl:"https://soeurzbfwioldvkkfkpd.supabase.co",
-  supabaseAnonKey:"sb_publishable_xFMGM4xQSSpYspeYl2jbpg_MOgXYPdJ",
-  adminTel:"3325941532",
-  adminEmail:"viveros.flores@gmail.com"
+  supabaseAnonKey:"sb_publishable_xFMGM4xQSSpYspeYl2jbpg_MOgXYPdJ"
 };

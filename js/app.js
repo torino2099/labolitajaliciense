@@ -14,13 +14,13 @@ if(!window.claude){
     }}
   }}
 }
-var K={ses:"bj_cel"}, ADMIN_TEL=String((window.BJ_CONFIG||{}).adminTel||"").replace(/\D/g,"");
+var K={ses:"bj_cel"};
 var CFG={precio:1.5,txt:{},imagenes:{},desde:1,hasta:99999999,estado:"abierta"}, cel=null, isAdm=false, ed=[], S={res:[]}, RF=[];
 function RES(){return S.res}
 function RFA(){return RF.filter(function(r){return r.activa!==false})}
 function msgAuth(e){
   var m=String((e&&e.message)||"");
-  if(/Invalid login credentials/i.test(m))return"Correo o contraseña incorrectos. Revisa que adminEmail en js/config.js sea el correo del usuario de Authentication → Users y que la contraseña sea la de ese usuario.";
+  if(/Invalid login credentials/i.test(m))return"Correo o contraseña incorrectos. Revisa que sea el correo del usuario que creaste en Supabase (Authentication → Users) y su contraseña.";
   if(/Email not confirmed/i.test(m))return"El usuario no está confirmado. En Supabase: Authentication → Users, bórralo y créalo de nuevo con Add user marcando Auto Confirm User.";
   if(/Database error|querying schema|unexpected_failure/i.test(m))return"Supabase no pudo leer ese usuario. Casi siempre pasa cuando se crea con SQL: bórralo y créalo con Authentication → Users → Add user (ver supabase/admin.sql).";
   if(/Failed to fetch|NetworkError|Load failed/i.test(m))return"No se pudo conectar con Supabase. Revisa supabaseUrl y supabaseAnonKey en js/config.js.";
@@ -110,10 +110,9 @@ async function showAdmin(){
   try{RF=await DB.rifasAdmin()}catch(e){}
   rSel();rPubR();await cargaRes();rAdmAll();tab("costos")
 }
-function adminEmail(){var e=(window.BJ_CONFIG||{}).adminEmail;return e||(DB.modo==="local"?"admin@demo.test":"")}
 async function entrarAdmin(email,pw,el){
   el.textContent="";
-  if(!email){el.textContent="Falta configurar adminEmail en js/config.js.";return}
+  if(!email){el.textContent="Escribe tu correo de administrador.";return}
   if(!pw){el.textContent="Ingresa la contraseña de administrador.";return}
   try{
     await DB.login(email,pw);
@@ -123,16 +122,13 @@ async function entrarAdmin(email,pw,el){
 }
 $("cel").oninput=function(){
   var c=$("cel").value.replace(/\D/g,"").slice(0,10);$("cel").value=c;$("err").textContent="";
-  var esAdm=!!ADMIN_TEL&&c===ADMIN_TEL;$("pwBox").classList.toggle("hide",!esAdm);
-  if(c.length===10&&!esAdm){isAdm=false;sv(K.ses,c);show(c)}
+  if(c.length===10){isAdm=false;sv(K.ses,c);show(c)}
 };
 $("btnIn").onclick=async function(){
   var c=$("cel").value.replace(/\D/g,"");
   if(c.length!==10){$("err").textContent="Ingresa un número válido de 10 dígitos.";return}
-  if(ADMIN_TEL&&c===ADMIN_TEL){await entrarAdmin(adminEmail(),$("pw").value,$("err"));$("pw").value="";return}
   $("err").textContent="";sv(K.ses,c);show(c)
 };
-$("pw").onkeydown=function(e){if(e.key==="Enter")$("btnIn").click()};
 $("aIn").onclick=async function(){await entrarAdmin($("aEmail").value.trim(),$("aPw").value,$("aErr"));$("aPw").value=""};
 $("cpOk").onclick=async function(){
   var a=$("cpN").value,b=$("cpR").value,m=$("cpMsg");
@@ -145,7 +141,7 @@ $("btnOut").onclick=async function(){
   try{localStorage.removeItem(K.ses)}catch(e){}
   if(isAdm){try{await DB.logout()}catch(e){}}
   isAdm=false;cel=null;S.res=[];$("btnOut").hidden=true;$("app").classList.add("hide");$("adm").classList.add("hide");
-  $("login").classList.remove("hide");$("res").textContent="";clrPrev();$("cel").value="";$("pw").value="";$("pwBox").classList.add("hide");
+  $("login").classList.remove("hide");$("res").textContent="";clrPrev();$("cel").value="";
   try{RF=(await DB.cargarPublico()).rifas}catch(e){}rSel();rPubR()
 };
 $("qty").oninput=function(){upd();clrPrev()};

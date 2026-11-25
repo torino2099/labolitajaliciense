@@ -7,13 +7,21 @@
 <meta name="description" content="La Bolita Jalisciense: sorteos reales entre amigos. Reserva tus boletos con tu número de celular.">
 <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
 <meta name="color-scheme" content="light dark">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#f6f5fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#08071a" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="La Bolita">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500;600;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-<header><div class="w"><img id="imgLogo" class="logo-img" src="assets/logo.jpg" alt="Logo de La Bolita Jalisciense"><nav class="nav" aria-label="Principal"><a href="#como">Cómo participar</a><a href="#wa">WhatsApp</a><a class="btn-buy" href="#compra">Comprar boletos</a></nav><button class="alt sans" id="btnOut" style="margin:0;padding:8px 14px;font-size:14px" hidden>Cerrar sesión</button></div></header>
+<header><div class="w"><img id="imgLogo" class="logo-img" src="assets/logo.jpg" alt="Logo de La Bolita Jalisciense"><nav class="nav" aria-label="Principal"><a href="#como">Cómo participar</a><a href="#wa">WhatsApp</a><button type="button" class="btn-install alt" id="btnInstall" hidden>📲 Instalar app</button><a class="btn-buy" href="#compra">Comprar boletos</a></nav><button class="alt sans" id="btnOut" style="margin:0;padding:8px 14px;font-size:14px" hidden>Cerrar sesión</button></div></header>
 
 <div class="w">
 <div id="modoBanner" class="ok hide" style="margin-top:14px"></div>
@@ -145,7 +153,6 @@
 <div id="login">
 <label for="cel">Tu número de celular (10 dígitos)</label>
 <input id="cel" inputmode="numeric" maxlength="10" placeholder="3312345678" autocomplete="tel">
-<div id="pwBox" class="hide"><label for="pw">Contraseña de administrador</label><input id="pw" type="password" autocomplete="current-password"></div>
 <button id="btnIn">Entrar</button>
 <div class="note">Tu sesión se abre sola al escribir los 10 dígitos.</div>
 <div class="note" id="err" style="color:#c0392b"></div>
@@ -205,6 +212,12 @@
 </section>
 </div>
 
+<div class="inst-dlg" id="instDlg" role="dialog" aria-modal="true" aria-labelledby="instTit" hidden>
+<div class="inst-card"><h3 id="instTit">Crea tu acceso directo</h3>
+<p>Instálala como app: se abre a pantalla completa, sin barra de direcciones, desde el icono de tu pantalla de inicio.</p>
+<ol id="instPasos"></ol>
+<button type="button" id="instOk">Entendido</button></div></div>
+
 <footer><div class="w"><span id="fTxt">La Bolita Jalisciense · Sorteos reales entre amigos</span><div id="fCt" style="margin-top:8px"></div></div></footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -220,7 +233,32 @@
   var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}})},{threshold:.06});
   d.classList.add("js");
   els.forEach(function(el){el.classList.add("rv");io.observe(el)});
-  <link rel="manifest" href="/manifest.json" />
+})();
+</script>
+<script>
+(function(){
+  var btn=document.getElementById("btnInstall"),dlg=document.getElementById("instDlg"),pasos=document.getElementById("instPasos"),ok=document.getElementById("instOk"),ev=null;
+  if(!btn||!dlg)return;
+  if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
+  var standalone=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone===true;
+  if(standalone)return;
+  var ua=navigator.userAgent||"",ios=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1),android=/android/i.test(ua);
+  btn.hidden=false;
+  window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();ev=e});
+  window.addEventListener("appinstalled",function(){btn.hidden=true;ev=null});
+  var S={ios:["Toca el botón <b>Compartir</b> (el cuadro con la flecha hacia arriba) de Safari.","Elige <b>Añadir a pantalla de inicio</b>.","Toca <b>Añadir</b>. Si usas otro navegador, ábrela en Safari."],
+    android:["Abre el menú del navegador (<b>⋮</b>).","Elige <b>Instalar aplicación</b> o <b>Añadir a pantalla de inicio</b>.","Confirma con <b>Instalar</b>."],
+    pc:["Busca el icono de <b>instalar</b> en la barra de direcciones (Chrome o Edge) o abre el menú <b>⋮</b>.","Elige <b>Instalar La Bolita Jalisciense</b>.","Confirma con <b>Instalar</b>."]};
+  var last=null;
+  function abrir(){var l=ios?S.ios:android?S.android:S.pc;pasos.innerHTML=l.map(function(t){return "<li>"+t+"</li>"}).join("");last=document.activeElement;dlg.hidden=false;ok.focus()}
+  function cerrar(){dlg.hidden=true;if(last&&last.focus)last.focus()}
+  btn.addEventListener("click",function(){
+    if(ev){var p=ev;ev=null;p.prompt();p.userChoice.catch(function(){});return}
+    abrir();
+  });
+  ok.addEventListener("click",cerrar);
+  dlg.addEventListener("click",function(e){if(e.target===dlg)cerrar()});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!dlg.hidden)cerrar()});
 })();
 </script>
 </body>
